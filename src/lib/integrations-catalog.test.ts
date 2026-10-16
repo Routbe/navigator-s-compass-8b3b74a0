@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterIntegrations, isLive } from "./integrations-catalog";
+import { filterIntegrations, isLive, liveStatOptions, shownLiveStats } from "./integrations-catalog";
 
 const ids = (f: Parameters<typeof filterIntegrations>[0]) => filterIntegrations(f).map((i) => i.id);
 
