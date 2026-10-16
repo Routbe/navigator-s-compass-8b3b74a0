@@ -33,6 +33,7 @@ import {
   ROUT_PRESETS,
   SOCIAL_POSITIONS,
   WALLPAPER_TYPES,
+  designButtonStyle,
   fontPairingOf,
   gradientCss,
   presetPrefEntries,
