@@ -251,23 +251,6 @@ function CustomCollapse({ open, id, children }: { open: boolean; id: string; chi
   );
 }
 
-/** Wrapper die custom-only velden dimt zolang custom mode uitstaat. */
-function CustomGate({ custom, children, label }: { custom: boolean; children: React.ReactNode; label: string }) {
-  return (
-    <div
-      className={cn("space-y-4 transition-opacity", custom ? "opacity-100" : "pointer-events-none opacity-50")}
-      aria-disabled={!custom}
-    >
-      {!custom && (
-        <p className="text-[11px] text-muted-foreground">
-          Zet &ldquo;Aanpassen&rdquo; aan bij {label} om deze fijnregeling te gebruiken.
-        </p>
-      )}
-      {children}
-    </div>
-  );
-}
-
 /** Presets + custom mode — hoort bij "Thema & Kleurenschema". */
 export function DesignPresetSection({
   prefs,
