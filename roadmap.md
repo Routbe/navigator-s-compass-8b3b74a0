@@ -18,3 +18,18 @@
 - [x] Neon gekoppeld + db/95_youtube_vault.sql toegepast
 - [ ] WakaTime OAuth (notities ontvangen)
 - [ ] Trakt.tv + Steam OAuth/PKCE (notities ontvangen)
+
+## Feedback 17/10
+- [ ] Inlogmails naar @rout.be-adressen komen niet aan (publiek + admin)
+- [ ] Mede-admins kunnen niet inloggen op admin-portaal (rol niet doorgevoerd)
+- [ ] Admin: Verificaties & aanvragen en Cadeaubonnen openen zonder zijbalk
+- [ ] Admin: Verificaties & aanvragen indelen (ingediend / bezig / gelukt / mislukt)
+- [ ] Admin: OAuth-apps verificatiescherm indelen (oud/nieuw, mappen)
+- [ ] Admin: Cadeaubonnen toevoegen/genereren-knop; "Publiek profiel" moet naar rout.be linken
+- [ ] Eigen badges: transparante achtergrond bij upload behouden
+- [ ] ROUT-presets kleiner (mobiel 4 per rij)
+- [ ] Knoppen & Typografie: zelfde "aanpassen"-knop als Achtergrond & Visual FX
+- [ ] "Made with ROUT"-voetnoot standaard aan; Pro-ontgrendeling geldt voor beide profielen
+- [ ] Hoekafronding en Knopstijl: opties duidelijk verschillend maken
+- [ ] Knopvorm: ronde bol (alleen icoon) of lijn met naam, met toegankelijkheidsmelding
+- [ ] Profielhub: niet verspringen bij openen/sluiten van mappen of pop-ups
