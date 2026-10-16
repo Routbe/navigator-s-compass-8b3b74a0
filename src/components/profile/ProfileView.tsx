@@ -153,6 +153,7 @@ export function ProfileView({
   };
   const fonts = fontPairingOf(prefs.fontPairing);
   const buttonStyle = designButtonStyle(prefs, t) ?? blockButtonStyle(profile.card_style, t);
+  const iconOnly = (prefs.buttonsCustom || prefs.customDesign) && prefs.buttonShape === "icon";
   /** Eigen canvas- en patroonkleuren overschrijven het thema, indien gekozen. */
   const canvas = {
     ...t,
@@ -694,12 +695,16 @@ export function ProfileView({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackClick(b.id, b.label)}
+                aria-label={iconOnly ? b.label : undefined}
+                title={iconOnly ? b.label : undefined}
                 className={cn(
-                  "flex min-h-12 w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-opacity hover:opacity-80",
+                  iconOnly
+                    ? "flex h-14 w-14 items-center justify-center self-center transition-opacity hover:opacity-80"
+                    : "flex min-h-12 w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-opacity hover:opacity-80",
                   buttonEffectClass(prefs.buttonEffect),
                   ctaClass(b.id),
                 )}
-                style={{ ...buttonStyle, ...blockStyleOverride(layers.blockStyles[b.id]) }}
+                style={{ ...buttonStyle, ...blockStyleOverride(layers.blockStyles[b.id]), ...(iconOnly ? { borderRadius: 999, padding: 0, minHeight: 0 } : null) }}
               >
                 {b.thumbnailUrl ? (
                   <img
@@ -715,8 +720,8 @@ export function ProfileView({
                     className="h-4 w-4 text-current"
                   />
                 )}
-                <span className="min-w-0 flex-1 truncate text-center">{b.label}</span>
-                <span className="h-4 w-4 shrink-0" aria-hidden />
+                {!iconOnly && <span className="min-w-0 flex-1 truncate text-center">{b.label}</span>}
+                {!iconOnly && <span className="h-4 w-4 shrink-0" aria-hidden />}
               </a>
             ),
           )}
