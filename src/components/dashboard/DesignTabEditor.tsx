@@ -191,17 +191,17 @@ export function DesignTile({
     >
       <span
         className={cn(
-          "relative flex aspect-square w-full flex-col justify-between overflow-hidden rounded-2xl border p-3 transition-all",
+          "relative flex aspect-square w-full flex-col justify-between overflow-hidden rounded-xl border p-1.5 transition-all sm:p-2",
           active ? "border-primary ring-2 ring-primary" : "border-border",
         )}
         style={{ background }}
         aria-hidden
       >
-        <span className="text-lg font-semibold leading-none" style={{ color: textColor }}>
+        <span className="text-xs font-semibold leading-none sm:text-sm" style={{ color: textColor }}>
           Aa
         </span>
         <span
-          className="block h-6 w-full border"
+          className="block h-3 w-full border sm:h-4"
           style={{
             background: buttonColor,
             borderColor: buttonTextColor ?? textColor,
@@ -209,8 +209,45 @@ export function DesignTile({
           }}
         />
       </span>
-      <span className="truncate text-xs font-medium">{label}</span>
+      <span className="truncate text-[10px] font-medium sm:text-[11px]">{label}</span>
     </button>
+  );
+}
+
+/** Ronde "aanpassen"-knop, dezelfde als bij Achtergrond & Visual FX. */
+function CustomizeButton({ open, onToggle, label, controls }: { open: boolean; onToggle: () => void; label: string; controls: string }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      aria-expanded={open}
+      aria-controls={controls}
+      title={label}
+      onClick={onToggle}
+      className={cn(
+        "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors",
+        open ? "border-primary/50 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:text-foreground",
+      )}
+    >
+      <SlidersHorizontal className="h-4 w-4" />
+    </button>
+  );
+}
+
+/** Uitklapblok dat alleen zichtbaar en bedienbaar is als "aanpassen" aanstaat. */
+function CustomCollapse({ open, id, children }: { open: boolean; id: string; children: React.ReactNode }) {
+  return (
+    <div
+      id={id}
+      className={cn(
+        "grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none",
+        open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+      )}
+      aria-hidden={!open}
+      inert={!open || undefined}
+    >
+      <div className="min-h-0 space-y-4 overflow-hidden">{children}</div>
+    </div>
   );
 }
 
@@ -281,7 +318,7 @@ export function DesignPresetSection({
           <SlidersHorizontal className="h-4 w-4" />
         </button>
       </div>
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
         {ROUT_PRESETS.map((p) => {
           const pt = themeOf(p.themeId);
           const design = p.design as Partial<ProfileDisplayPrefs>;
@@ -481,110 +518,88 @@ export function DesignButtonsTypographySection({
   theme: string;
 }) {
   const t = themeOf(theme);
+  const preview = (patch: Partial<ProfileDisplayPrefs>) =>
+    designButtonStyle({ ...prefs, ...patch, buttonsCustom: true, buttonSize: "sm" }, t) ?? {};
   return (
     <div className="space-y-5">
-      <div className="flex items-start justify-between gap-4 rounded-xl border border-border p-3">
-        <div><p className="text-sm font-medium">🔘 Knoppen aanpassen</p><p className="mt-1 text-xs text-muted-foreground">Vorm, maat, kleur en beweging los instellen.</p></div>
-        <Switch aria-label="Knoppen aanpassen" checked={prefs.buttonsCustom} onCheckedChange={(v) => setPref("buttonsCustom", v)} />
-      </div>
-      <CustomGate custom={prefs.buttonsCustom} label="Knoppen">
-      <p className="text-sm font-medium">Knopstijl &amp; vorm</p>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {BUTTON_VARIANTS.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            onClick={() => setPref("buttonVariant", v.id)}
-            className={cn(
-              "rounded-xl border p-3 text-left transition-colors",
-              prefs.buttonVariant === v.id ? "border-primary ring-1 ring-primary" : "border-border",
-            )}
-          >
-            <p className="text-xs font-medium">{v.label}</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">{v.note}</p>
-          </button>
-        ))}
-      </div>
-      <p className="input-label pt-2">Hoekafronding</p>
-      <div className="flex flex-wrap gap-2">
-        {BUTTON_RADII.map((r) => (
-          <Pill
-            key={r.id}
-            active={prefs.buttonRadius === r.id}
-            onClick={() => setPref("buttonRadius", r.id)}
-          >
-            {r.label}
-          </Pill>
-        ))}
-      </div>
-      <div className="grid gap-3 pt-2 sm:grid-cols-2">
-        <ColorField
-          label="Knopkleur"
-          value={prefs.buttonColor}
-          onChange={(v) => setPref("buttonColor", v)}
-        />
-        <ColorField
-          label="Knoptekstkleur"
-          value={prefs.buttonTextColor}
-          onChange={(v) => setPref("buttonTextColor", v)}
-        />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2"><p className="input-label">Knopgrootte</p><Select value={prefs.buttonSize} onValueChange={(v) => setPref("buttonSize", v as ProfileDisplayPrefs["buttonSize"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{BUTTON_SIZES.map((o) => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}</SelectContent></Select></div>
-        <div className="space-y-2"><p className="input-label">Beweging</p><Select value={prefs.buttonEffect} onValueChange={(v) => setPref("buttonEffect", v as ProfileDisplayPrefs["buttonEffect"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{BUTTON_EFFECTS.map((o) => <SelectItem key={o.id} value={o.id}>{o.label} — {o.hint}</SelectItem>)}</SelectContent></Select></div>
-      </div>
-      </CustomGate>
-
-      <div className="space-y-3 border-t border-border pt-4">
-        <div className="flex items-start justify-between gap-4 rounded-xl border border-border p-3"><div><p className="text-sm font-medium">🔤 Naam &amp; typografie aanpassen</p><p className="mt-1 text-xs text-muted-foreground">Lettertype, schaal, afstand en gloed verfijnen.</p></div><Switch aria-label="Typografie aanpassen" checked={prefs.typographyCustom} onCheckedChange={(v) => setPref("typographyCustom", v)} /></div>
-        <CustomGate custom={prefs.typographyCustom} label="Naam en typografie">
-        <Select
-          value={prefs.fontPairing}
-          onValueChange={(v) => setPref("fontPairing", v as ProfileDisplayPrefs["fontPairing"])}
-        >
-          <SelectTrigger className="h-10 text-xs">
-            <SelectValue placeholder="Kies een fontpaar" />
-          </SelectTrigger>
-          <SelectContent>
-            {FONT_PAIRINGS.map((f) => (
-              <SelectItem key={f.id} value={f.id}>
-                {f.label} — {f.note}
-              </SelectItem>
+      <section className="space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div><p className="text-sm font-medium">🔘 Knoppen</p><p className="mt-1 text-xs text-muted-foreground">Vorm, maat, kleur en beweging los instellen.</p></div>
+          <CustomizeButton open={prefs.buttonsCustom} onToggle={() => setPref("buttonsCustom", !prefs.buttonsCustom)} label="Knoppen aanpassen" controls="buttons-advanced" />
+        </div>
+        <CustomCollapse open={prefs.buttonsCustom} id="buttons-advanced">
+          <p className="input-label">Knopvorm</p>
+          <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Knopvorm">
+            {([["bar", "Lijn met naam"], ["icon", "Ronde bol (alleen icoon)"]] as const).map(([id, label]) => (
+              <button key={id} type="button" role="radio" aria-checked={prefs.buttonShape === id} onClick={() => setPref("buttonShape", id)}
+                className={cn("flex flex-col items-center gap-2 rounded-xl border p-3 text-xs font-medium", prefs.buttonShape === id ? "border-primary ring-1 ring-primary" : "border-border")}>
+                {id === "bar"
+                  ? <span className="flex h-8 w-full items-center justify-center text-[10px]" style={{ ...preview({}), borderRadius: 999 }}>Mijn link</span>
+                  : <span className="flex h-9 w-9 items-center justify-center" style={{ ...preview({}), borderRadius: 999, padding: 0 }}>●</span>}
+                {label}
+              </button>
             ))}
-          </SelectContent>
-        </Select>
-        <div className="rounded-xl border border-border p-3">
-          <p className="text-lg" style={{ fontFamily: fontPairingOf(prefs.fontPairing).heading }}>
-            {fontPairingOf(prefs.fontPairing).label}
-          </p>
-          <p
-            className="mt-1 text-xs text-muted-foreground"
-            style={{ fontFamily: fontPairingOf(prefs.fontPairing).body }}
-          >
-            Zo leest je bio en je knoptekst op het publieke profiel.
-          </p>
+          </div>
+          {prefs.buttonShape === "icon" && (
+            <p role="note" className="rounded-lg border border-border bg-muted/40 p-2.5 text-[11px] text-muted-foreground">
+              Let op: zonder zichtbare naam weten bezoekers alleen aan het icoon waar een knop naartoe gaat. Schermlezers lezen de naam nog steeds voor, maar voor slechtzienden en bij eigen links zonder herkenbaar logo is dit minder duidelijk.
+            </p>
+          )}
+          <p className="input-label pt-2">Knopstijl</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {BUTTON_VARIANTS.map((v) => (
+              <button key={v.id} type="button" onClick={() => setPref("buttonVariant", v.id)} aria-pressed={prefs.buttonVariant === v.id}
+                className={cn("space-y-2 rounded-xl border p-2.5 text-left transition-colors", prefs.buttonVariant === v.id ? "border-primary ring-1 ring-primary" : "border-border")}>
+                <span className="flex h-12 items-center justify-center rounded-lg px-2" style={{ background: t.bg }} aria-hidden>
+                  <span className="flex h-7 w-full items-center justify-center text-[10px] font-medium" style={preview({ buttonVariant: v.id })}>Link</span>
+                </span>
+                <span className="block text-xs font-medium">{v.label}</span>
+                <span className="block text-[10px] leading-snug text-muted-foreground">{v.note}</span>
+              </button>
+            ))}
+          </div>
+          <p className="input-label pt-2">Hoekafronding</p>
+          <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label="Hoekafronding">
+            {BUTTON_RADII.map((r) => (
+              <button key={r.id} type="button" role="radio" aria-checked={prefs.buttonRadius === r.id} onClick={() => setPref("buttonRadius", r.id)}
+                className={cn("flex flex-col items-center gap-1.5 rounded-xl border p-2 text-[10px] font-medium", prefs.buttonRadius === r.id ? "border-primary ring-1 ring-primary" : "border-border")}>
+                <span className="block h-7 w-full border-2 border-current" style={{ borderRadius: r.px }} aria-hidden />
+                {r.label}
+              </button>
+            ))}
+          </div>
+          <div className="grid gap-3 pt-2 sm:grid-cols-2">
+            <ColorField label="Knopkleur" value={prefs.buttonColor} onChange={(v) => setPref("buttonColor", v)} />
+            <ColorField label="Knoptekstkleur" value={prefs.buttonTextColor} onChange={(v) => setPref("buttonTextColor", v)} />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2"><p className="input-label">Knopgrootte</p><Select value={prefs.buttonSize} onValueChange={(v) => setPref("buttonSize", v as ProfileDisplayPrefs["buttonSize"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{BUTTON_SIZES.map((o) => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}</SelectContent></Select></div>
+            <div className="space-y-2"><p className="input-label">Beweging</p><Select value={prefs.buttonEffect} onValueChange={(v) => setPref("buttonEffect", v as ProfileDisplayPrefs["buttonEffect"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{BUTTON_EFFECTS.map((o) => <SelectItem key={o.id} value={o.id}>{o.label} — {o.hint}</SelectItem>)}</SelectContent></Select></div>
+          </div>
+        </CustomCollapse>
+      </section>
+
+      <section className="space-y-3 border-t border-border pt-4">
+        <div className="flex items-start justify-between gap-3">
+          <div><p className="text-sm font-medium">🔤 Naam &amp; typografie</p><p className="mt-1 text-xs text-muted-foreground">Lettertype, schaal, afstand en gloed verfijnen.</p></div>
+          <CustomizeButton open={prefs.typographyCustom} onToggle={() => setPref("typographyCustom", !prefs.typographyCustom)} label="Typografie aanpassen" controls="type-advanced" />
         </div>
-        <div className="space-y-1.5">
-          <p className="input-label">Tekstgrootte ({prefs.fontScale}%)</p>
-          <Slider
-            value={[prefs.fontScale]}
-            min={85}
-            max={125}
-            step={5}
-            onValueChange={([v]) => setPref("fontScale", v ?? 100)}
-          />
-        </div>
-        <div className="space-y-1.5"><p className="input-label">Titelgrootte ({prefs.titleScale}%)</p><Slider value={[prefs.titleScale]} min={80} max={180} step={5} onValueChange={([v]) => setPref("titleScale", v ?? 100)} /></div>
-        <div className="space-y-1.5"><p className="input-label">Letterafstand ({prefs.titleLetterSpacing}px)</p><Slider value={[prefs.titleLetterSpacing]} min={-1} max={12} step={1} onValueChange={([v]) => setPref("titleLetterSpacing", v ?? 0)} /></div>
-        <div className="space-y-1.5"><p className="input-label">Tekstgloed ({prefs.titleGlow}px)</p><Slider value={[prefs.titleGlow]} min={0} max={40} step={2} onValueChange={([v]) => setPref("titleGlow", v ?? 0)} /></div>
-        <ColorField
-          label="Titelkleur"
-          value={prefs.titleColor}
-          onChange={(v) => setPref("titleColor", v)}
-          placeholder={t.text}
-        />
-        </CustomGate>
-      </div>
+        <CustomCollapse open={prefs.typographyCustom} id="type-advanced">
+          <Select value={prefs.fontPairing} onValueChange={(v) => setPref("fontPairing", v as ProfileDisplayPrefs["fontPairing"])}>
+            <SelectTrigger className="h-10 text-xs"><SelectValue placeholder="Kies een fontpaar" /></SelectTrigger>
+            <SelectContent>{FONT_PAIRINGS.map((f) => <SelectItem key={f.id} value={f.id}>{f.label} — {f.note}</SelectItem>)}</SelectContent>
+          </Select>
+          <div className="rounded-xl border border-border p-3">
+            <p className="text-lg" style={{ fontFamily: fontPairingOf(prefs.fontPairing).heading }}>{fontPairingOf(prefs.fontPairing).label}</p>
+            <p className="mt-1 text-xs text-muted-foreground" style={{ fontFamily: fontPairingOf(prefs.fontPairing).body }}>Zo leest je bio en je knoptekst op het publieke profiel.</p>
+          </div>
+          <div className="space-y-1.5"><p className="input-label">Tekstgrootte ({prefs.fontScale}%)</p><Slider value={[prefs.fontScale]} min={85} max={125} step={5} onValueChange={([v]) => setPref("fontScale", v ?? 100)} /></div>
+          <div className="space-y-1.5"><p className="input-label">Titelgrootte ({prefs.titleScale}%)</p><Slider value={[prefs.titleScale]} min={80} max={180} step={5} onValueChange={([v]) => setPref("titleScale", v ?? 100)} /></div>
+          <div className="space-y-1.5"><p className="input-label">Letterafstand ({prefs.titleLetterSpacing}px)</p><Slider value={[prefs.titleLetterSpacing]} min={-1} max={12} step={1} onValueChange={([v]) => setPref("titleLetterSpacing", v ?? 0)} /></div>
+          <div className="space-y-1.5"><p className="input-label">Tekstgloed ({prefs.titleGlow}px)</p><Slider value={[prefs.titleGlow]} min={0} max={40} step={2} onValueChange={([v]) => setPref("titleGlow", v ?? 0)} /></div>
+          <ColorField label="Titelkleur" value={prefs.titleColor} onChange={(v) => setPref("titleColor", v)} placeholder={t.text} />
+        </CustomCollapse>
+      </section>
     </div>
   );
 }
