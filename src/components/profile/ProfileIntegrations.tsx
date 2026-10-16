@@ -21,6 +21,7 @@ type Item = {
     videos?: { title: string; url: string; date: string | null; thumb: string }[];
     posts?: { title: string; url: string; date: string | null }[];
     chess?: { blitz?: number | null; rapid?: number | null; online?: boolean | null; challengeUrl?: string };
+    duolingo?: { streak: number | null; languageName: string | null; totalXp: number | null };
   } | null;
 };
 type Theme = { card: string; border: string; text: string; muted: string };
@@ -65,9 +66,33 @@ export function filterItem(item: Item, selected: string[] | undefined): Item {
   if (!has(show, "activity")) delete st.subtitle;
   if (st.stats) st.stats = st.stats.filter((x) => (/repo/i.test(x.label) ? has(show, "repos") : has(show, "followers")));
   if (st.chess) st.chess = { blitz: has(show, "blitz") ? st.chess.blitz : null, rapid: has(show, "rapid") ? st.chess.rapid : null, online: has(show, "online") ? st.chess.online : null, challengeUrl: has(show, "challenge") ? st.chess.challengeUrl : undefined };
+  if (st.duolingo) st.duolingo = { streak: has(show, "streak") ? st.duolingo.streak : null, languageName: has(show, "language") ? st.duolingo.languageName : null, totalXp: has(show, "xp") ? st.duolingo.totalXp : null };
   if (!has(show, "videos")) delete st.videos;
   if (!has(show, "posts")) delete st.posts;
   return { ...item, status: st };
+}
+
+function DuolingoCard({ item, theme }: { item: Item; theme: Theme }) {
+  const meta = integrationById(item.provider);
+  const d = item.status?.duolingo;
+  if (!d) return null;
+  return (
+    <a href={item.status?.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-2xl p-2.5" style={{ background: theme.card, border: `1px solid ${theme.border}`, color: theme.text }}>
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg" style={{ border: `1px solid ${theme.border}` }}>
+        <BrandIcon icon={meta?.icon ?? null} className="h-5 w-5" />
+      </span>
+      <span className="min-w-0 flex-1 text-left">
+        <span className="block text-[10px] uppercase tracking-wider" style={{ color: theme.muted }}>{meta?.label}</span>
+        <span className="block truncate text-sm font-medium">
+          {d.streak != null ? <>🔥 {d.streak} {d.streak === 1 ? "dag" : "dagen"} streak</> : item.status?.title ?? item.handle}
+        </span>
+        <span className="mt-0.5 flex flex-wrap gap-1.5 text-[11px] tabular-nums" style={{ color: theme.muted }}>
+          {d.languageName ? <span>Leert momenteel {d.languageName}</span> : null}
+          {d.totalXp != null ? <span className="rounded px-1.5" style={{ border: `1px solid ${theme.border}` }}>{d.totalXp.toLocaleString("nl-NL")} XP</span> : null}
+        </span>
+      </span>
+    </a>
+  );
 }
 
 function ChessCard({ item, theme }: { item: Item; theme: Theme }) {
@@ -171,6 +196,7 @@ function VideoCard({ item, theme }: { item: Item; theme: Theme }) {
 }
 
 function Card({ item, theme }: { item: Item; theme: Theme }) {
+  if (item.status?.duolingo) return <DuolingoCard item={item} theme={theme} />;
   if (item.status?.chess) return <ChessCard item={item} theme={theme} />;
   if (item.status?.videos?.length) return <VideoCard item={item} theme={theme} />;
   if (item.status?.posts?.length) return <FeedCard item={item} theme={theme} />;

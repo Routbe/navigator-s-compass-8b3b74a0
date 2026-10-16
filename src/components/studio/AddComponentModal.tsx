@@ -91,6 +91,7 @@ export const LIVE_COMPONENTS: { provider: string; note: string }[] = [
   { provider: "wakatime", note: "Codeertijd" },
   { provider: "lichess", note: "Rating en partijen" },
   { provider: "chesscom", note: "Rating en partijen" },
+  { provider: "duolingo", note: "Streak en taal" },
   { provider: "mastodon", note: "Laatste bericht" },
   { provider: "bluesky", note: "Laatste bericht" },
   { provider: "wsocial", note: "Laatste bericht" },

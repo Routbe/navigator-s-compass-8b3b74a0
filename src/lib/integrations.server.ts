@@ -25,6 +25,8 @@ export type IntegrationStatus = {
   videos?: { title: string; url: string; date: string | null; thumb: string }[];
   /** Latest feed entries (RSS / blog). */
   posts?: { title: string; url: string; date: string | null }[];
+  /** Duolingo card: streak, active language, total XP. */
+  duolingo?: { streak: number | null; languageName: string | null; totalXp: number | null };
   chess?: { blitz?: number | null; rapid?: number | null; online?: boolean | null; challengeUrl?: string; username?: string };
 };
 
@@ -271,6 +273,17 @@ export async function fetchStatus(provider: string, handle: string): Promise<Int
       } catch {
         return null;
       }
+    }
+    case "duolingo": {
+      const { fetchDuolingo } = await import("./duolingo.server");
+      const d = await fetchDuolingo(handle);
+      if (!d) return null;
+      return {
+        title: d.username,
+        url: `https://www.duolingo.com/profile/${encodeURIComponent(d.username)}`,
+        image: null,
+        duolingo: { streak: d.streak, languageName: d.languageName, totalXp: d.totalXp },
+      };
     }
     case "lichess": {
       const j = (await getJson(`https://lichess.org/api/user/${encodeURIComponent(handle)}`, { accept: "application/json" })) as
