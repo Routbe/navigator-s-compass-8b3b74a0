@@ -27,9 +27,10 @@
 - [ ] Admin: OAuth-apps verificatiescherm indelen (oud/nieuw, mappen)
 - [ ] Admin: Cadeaubonnen toevoegen/genereren-knop; "Publiek profiel" moet naar rout.be linken
 - [ ] Eigen badges: transparante achtergrond bij upload behouden
-- [ ] ROUT-presets kleiner (mobiel 4 per rij)
-- [ ] Knoppen & Typografie: zelfde "aanpassen"-knop als Achtergrond & Visual FX
-- [ ] "Made with ROUT"-voetnoot standaard aan; Pro-ontgrendeling geldt voor beide profielen
-- [ ] Hoekafronding en Knopstijl: opties duidelijk verschillend maken
-- [ ] Knopvorm: ronde bol (alleen icoon) of lijn met naam, met toegankelijkheidsmelding
-- [ ] Profielhub: niet verspringen bij openen/sluiten van mappen of pop-ups
+- [x] ROUT-presets kleiner (mobiel 4 per rij)
+- [x] Knoppen & Typografie: zelfde "aanpassen"-knop als Achtergrond & Visual FX
+- [x] "Made with ROUT"-voetnoot standaard aan (was al zo)
+- [ ] Pro-ontgrendeling moet voor beide profielen gelden
+- [x] Hoekafronding en Knopstijl: opties duidelijk verschillend maken
+- [x] Knopvorm: ronde bol (alleen icoon) of lijn met naam, met toegankelijkheidsmelding
+- [x] Profielhub: niet verspringen bij openen/sluiten van mappen of pop-ups
