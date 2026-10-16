@@ -11,3 +11,6 @@
 - [ ] db/95_youtube_vault.sql toepassen op Neon (wacht op NEON_API_KEY / Vercel deploy) + Google Cloud: redirect URI, YouTube Data API v3, youtube.readonly scope
 - [x] Mails: transactional tags + X-Mailin-Tag, one light design for all mails (incl. fallback frame), sync script
 - [ ] Brevo-templates uploaden: `bun scripts/sync-brevo-templates.ts` (wacht op BREVO_API_KEY)
+- [x] Live-component panel gekoppeld aan de componentenlijst (koppelen, officieel koppelen, ontkoppelen, stat-schakelaars)
+- [x] YouTube-component: eigen koppel/toon/ontkoppel-knoppen + aantal video's
+- [ ] In de browser testen met database (wacht op DATABASE_URL)

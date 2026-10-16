@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterIntegrations, isLive } from "./integrations-catalog";
+import { filterIntegrations, isLive, liveStatOptions, shownLiveStats } from "./integrations-catalog";
 
 const ids = (f: Parameters<typeof filterIntegrations>[0]) => filterIntegrations(f).map((i) => i.id);
 
@@ -15,5 +15,14 @@ describe("integrations grid", () => {
   });
   it("W.social sits in Socials and connects by handle", () => {
     expect(filterIntegrations("socials").find((i) => i.id === "wsocial")?.mode).toBe("handle");
+  });
+});
+
+describe("youtube live stats", () => {
+  it("offers the video count", () => {
+    expect(liveStatOptions("youtube")).toContain("videoCount");
+  });
+  it("never lets one platform show another platform's stat", () => {
+    expect(shownLiveStats("lichess", ["videoCount", "blitz"])).toEqual(new Set(["blitz"]));
   });
 });

@@ -23,6 +23,7 @@ export function YouTubeCardView({ card, theme }: { card: Card; theme: Theme }) {
           <p className="text-xs" style={{ color: theme.muted }}>
             {card.subscribers != null && <>{formatCount(card.subscribers)} abonnees · </>}
             {formatCount(card.views)} weergaven
+            {card.videoCount != null && <> · {formatCount(card.videoCount)} video's</>}
           </p>
         </div>
         <span className="text-xs font-medium" style={{ color: theme.muted }}>YouTube ↗</span>
