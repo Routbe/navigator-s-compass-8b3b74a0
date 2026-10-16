@@ -183,6 +183,7 @@ export async function refreshCard(userId: string): Promise<YouTubeCard | null> {
       : `https://www.youtube.com/channel/${id}`,
     subscribers: item.statistics?.hiddenSubscriberCount ? null : num(item.statistics?.subscriberCount),
     views: num(item.statistics?.viewCount),
+    videoCount: num(item.statistics?.videoCount),
     videos: ((vids?.["items"] ?? []) as any[]).slice(0, 3).map((v) => ({
       id: String(v.id?.videoId ?? ""),
       title: String(v.snippet?.title ?? "").slice(0, 160),

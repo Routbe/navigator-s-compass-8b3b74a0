@@ -8,6 +8,8 @@ export type YouTubeCard = {
   url: string;
   subscribers: number | null;
   views: number | null;
+  /** Public video count (statistics.videoCount); missing in older cached cards. */
+  videoCount?: number | null;
   videos: YouTubeVideo[];
 };
 

@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { LiveBlockSettings } from "@/components/studio/LiveBlockSettings";
+import { YouTubeStudioCard } from "@/components/studio/YouTubeStudioCard";
 import { Switch } from "@/components/ui/switch";
 import { SocialPlatformIcon } from "@/lib/social-icons";
 import { SocialHandleInput } from "@/components/SocialHandleInput";
@@ -265,7 +267,16 @@ export function ProfileLinksManager({
               {open && (
                 <div className="mt-3 space-y-2 border-t border-border pt-3">
                   {section ? (
-                    <Input aria-label="Titel" value={b.label} maxLength={100} onChange={(e) => patch(b.id, { label: e.target.value })} />
+                    <>
+                      <Input aria-label="Titel" value={b.label} maxLength={100} onChange={(e) => patch(b.id, { label: e.target.value })} />
+                      {b.kind === "widget:youtube" && <YouTubeStudioCard />}
+                    </>
+                  ) : b.kind === "live" ? (
+                    <LiveBlockSettings
+                      provider={b.value}
+                      stats={b.stats}
+                      onStatsChange={(stats) => patch(b.id, { stats })}
+                    />
                   ) : b.kind === "media_gallery" ? (
                     <GalleryBlockSettings
                       value={b.value}
