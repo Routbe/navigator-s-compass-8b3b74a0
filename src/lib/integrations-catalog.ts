@@ -133,7 +133,7 @@ export function isLive(item: Integration): boolean {
 }
 
 /** Data a live component may show, per platform (only what the public fetchers return). */
-export type LiveStatKey = "followers" | "repos" | "bio" | "activity" | "blitz" | "rapid" | "online" | "challenge" | "videos" | "posts";
+export type LiveStatKey = "followers" | "repos" | "bio" | "activity" | "blitz" | "rapid" | "online" | "challenge" | "videos" | "videoCount" | "posts";
 
 export const LIVE_STAT_LABELS: Record<LiveStatKey, string> = {
   followers: "Aantal volgers",
@@ -145,6 +145,7 @@ export const LIVE_STAT_LABELS: Record<LiveStatKey, string> = {
   online: "Online-status",
   challenge: "Uitdaag-knop",
   videos: "Nieuwste video's",
+  videoCount: "Aantal video's",
   posts: "Laatste posts",
 };
 
@@ -157,7 +158,7 @@ const LIVE_STATS: Record<string, LiveStatKey[]> = {
   wakatime: ["activity"],
   lichess: ["blitz", "rapid", "online", "challenge"],
   chesscom: ["blitz", "rapid", "online", "challenge"],
-  youtube: ["videos", "activity"],
+  youtube: ["videoCount", "videos", "activity"],
   rss: ["posts"],
 };
 

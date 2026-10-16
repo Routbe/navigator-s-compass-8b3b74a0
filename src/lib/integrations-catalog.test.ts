@@ -17,3 +17,12 @@ describe("integrations grid", () => {
     expect(filterIntegrations("socials").find((i) => i.id === "wsocial")?.mode).toBe("handle");
   });
 });
+
+describe("youtube live stats", () => {
+  it("offers the video count", () => {
+    expect(liveStatOptions("youtube")).toContain("videoCount");
+  });
+  it("never lets one platform show another platform's stat", () => {
+    expect(shownLiveStats("lichess", ["videoCount", "blitz"])).toEqual(new Set(["blitz"]));
+  });
+});
