@@ -72,6 +72,8 @@ export interface ProfileDesignPrefs {
   wallpaperOverlay: number;
   buttonVariant: ButtonVariant;
   buttonRadius: ButtonRadius;
+  /** "bar" = knop met naam; "icon" = ronde bol met alleen het icoon (naam blijft voor schermlezers). */
+  buttonShape: "bar" | "icon";
   buttonSize: ButtonSize;
   buttonEffect: ButtonEffect;
   buttonColor: string | null;
@@ -244,6 +246,7 @@ export const DEFAULT_DESIGN_PREFS: ProfileDesignPrefs = {
   wallpaperOverlay: 40,
   buttonVariant: "fill",
   buttonRadius: "rounded",
+  buttonShape: "bar",
   buttonSize: "md",
   buttonEffect: "none",
   buttonColor: null,
@@ -671,9 +674,9 @@ export const BUTTON_VARIANTS: { id: ButtonVariant; label: string; note: string }
 
 export const BUTTON_RADII: { id: ButtonRadius; label: string; px: number }[] = [
   { id: "pill", label: "Pill", px: 999 },
-  { id: "xl", label: "Extra rond", px: 24 },
-  { id: "rounded", label: "Rounded", px: 14 },
-  { id: "soft", label: "Zacht", px: 8 },
+  { id: "xl", label: "Extra rond", px: 18 },
+  { id: "rounded", label: "Rounded", px: 11 },
+  { id: "soft", label: "Zacht", px: 5 },
   { id: "sharp", label: "Sharp", px: 0 },
 ];
 
@@ -865,6 +868,7 @@ export function normalizeDesignPrefs(r: Record<string, unknown>): ProfileDesignP
       BUTTON_RADII.map((v) => v.id),
       "rounded",
     ),
+    buttonShape: pick(r["buttonShape"], ["bar", "icon"] as const, "bar"),
     buttonSize: pick(
       r["buttonSize"],
       BUTTON_SIZES.map((v) => v.id),
