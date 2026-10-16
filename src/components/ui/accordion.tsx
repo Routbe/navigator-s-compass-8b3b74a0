@@ -14,10 +14,27 @@ const AccordionItem = React.forwardRef<
 ));
 AccordionItem.displayName = "AccordionItem";
 
+/**
+ * Keeps the clicked header at the same spot on screen while a sibling above it
+ * collapses (single accordions), so the page never jumps down or up.
+ */
+function keepInPlace(el: HTMLElement) {
+  if (typeof window === "undefined") return;
+  const start = el.getBoundingClientRect().top;
+  const until = performance.now() + 450;
+  const step = () => {
+    if (!el.isConnected) return;
+    const drift = el.getBoundingClientRect().top - start;
+    if (Math.abs(drift) > 0.5) window.scrollBy({ top: drift, behavior: "instant" as ScrollBehavior });
+    if (performance.now() < until) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, onClick, ...props }, ref) => (
   // Elke sectiekop is een echt kopniveau, zodat screenreaders de studio als
   // lijst van secties aankondigen in plaats van losse knoppen.
   <AccordionPrimitive.Header asChild>
@@ -30,6 +47,10 @@ const AccordionTrigger = React.forwardRef<
           "[&[data-state=open]>svg]:rotate-180",
           className,
         )}
+        onClick={(e) => {
+          keepInPlace(e.currentTarget);
+          onClick?.(e);
+        }}
         {...props}
       >
         {children}
