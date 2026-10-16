@@ -83,6 +83,7 @@ export const INTEGRATIONS: Integration[] = [
   // Cultuur & Vrije Tijd
   soon("letterboxd", "Letterboxd", "culture", "siLetterboxd"),
   { id: "chesscom", label: "Chess.com", category: "culture", icon: "siChessdotcom", mode: "handle", placeholder: "Chess.com-gebruikersnaam" },
+  { id: "duolingo", label: "Duolingo", category: "culture", icon: "siDuolingo", mode: "handle", placeholder: "Duolingo-gebruikersnaam" },
   { id: "lichess", label: "Lichess", category: "culture", icon: "siLichess", mode: "handle", placeholder: "Lichess-gebruikersnaam" },
   soon("storygraph", "StoryGraph", "culture", null),
   soon("goodreads", "Goodreads", "culture", "siGoodreads"),
@@ -133,7 +134,7 @@ export function isLive(item: Integration): boolean {
 }
 
 /** Data a live component may show, per platform (only what the public fetchers return). */
-export type LiveStatKey = "followers" | "repos" | "bio" | "activity" | "blitz" | "rapid" | "online" | "challenge" | "videos" | "videoCount" | "posts";
+export type LiveStatKey = "followers" | "repos" | "bio" | "activity" | "blitz" | "rapid" | "online" | "challenge" | "videos" | "videoCount" | "posts" | "streak" | "language" | "xp";
 
 export const LIVE_STAT_LABELS: Record<LiveStatKey, string> = {
   followers: "Aantal volgers",
@@ -147,6 +148,9 @@ export const LIVE_STAT_LABELS: Record<LiveStatKey, string> = {
   videos: "Nieuwste video's",
   videoCount: "Aantal video's",
   posts: "Laatste posts",
+  streak: "Streak",
+  language: "Taal die je leert",
+  xp: "Totaal XP",
 };
 
 const LIVE_STATS: Record<string, LiveStatKey[]> = {
@@ -160,6 +164,7 @@ const LIVE_STATS: Record<string, LiveStatKey[]> = {
   chesscom: ["blitz", "rapid", "online", "challenge"],
   youtube: ["videoCount", "videos", "activity"],
   rss: ["posts"],
+  duolingo: ["streak", "language", "xp"],
 };
 
 export function liveStatOptions(provider: string): LiveStatKey[] {

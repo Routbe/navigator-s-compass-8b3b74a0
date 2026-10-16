@@ -1,5 +1,6 @@
 /** Browser-safe validation + routing rules for the Connections Hub. */
 import { integrationById } from "./integrations-catalog";
+import { DUOLINGO_USER } from "./duolingo-rules";
 import { normalizeFeed, normalizeMastodon } from "./open-web-rules";
 
 export type Audience = "pro" | "social" | "both";
@@ -25,6 +26,10 @@ export function normalizeIntegrationValue(provider: string, raw: string): string
     case "lichess": {
       const h = v.replace(/^@/, "").replace(/^https?:\/\/(www\.)?(chess\.com\/member|lichess\.org\/@)\//i, "").replace(/\/.*$/, "");
       return /^[A-Za-z0-9][A-Za-z0-9_-]{1,29}$/.test(h) ? h : null;
+    }
+    case "duolingo": {
+      const h = v.replace(/^@/, "").replace(/^https?:\/\/(www\.)?duolingo\.com\/profile\//i, "").replace(/[/?#].*$/, "");
+      return DUOLINGO_USER.test(h) ? h : null;
     }
     case "bluesky":
     case "wsocial": {
