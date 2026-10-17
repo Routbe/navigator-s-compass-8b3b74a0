@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { handleUpdatedSample, WEBHOOK_VERIFY_SNIPPET } from "@/lib/oauth/integration-templates";
 import { useConsoleApps } from "@/components/console/console-data";
+import { ApiActivity } from "@/components/console/ApiActivity";
 
 export const Route = createFileRoute("/_authenticated/console/api")({
   head: () => ({ meta: [
@@ -20,7 +21,10 @@ export const Route = createFileRoute("/_authenticated/console/api")({
 function ApiConsole() {
   return <ConsolePage title="API Keys & Webhooks" description="Credentials and endpoints for direct server-side integrations.">
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
-      <ApiKeys />
+      <div className="space-y-4">
+        <ApiKeys />
+        <ApiActivity />
+      </div>
       <div className="space-y-4">
         <ConsoleCard title="OpenAPI 3.1" description="Machine-readable reference for ROUT endpoints.">
           <Button asChild variant="outline"><a href="/api/public/openapi.json" target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" /> Open specification</a></Button>

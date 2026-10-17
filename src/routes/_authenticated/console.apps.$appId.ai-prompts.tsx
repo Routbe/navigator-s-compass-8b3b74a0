@@ -42,30 +42,30 @@ function AiPromptsPage() {
   if (!app) return null;
   return (
     <ConsolePage title={t("console.aiPrompts.title")} description={t("console.aiPrompts.desc")}>
-      <Accordion type="multiple" defaultValue={["auth"]} className="space-y-3">
+      <ConsoleCard>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div><p className="mb-2 text-sm font-medium">{t("console.aiPrompts.assistant")}</p><Pills<AiTool> items={TOOLS} value={tool} onChange={setTool} /></div>
+          <div><p className="mb-2 text-sm font-medium">{t("console.aiPrompts.stack")}</p><Pills<Stack> items={STACKS} value={stack} onChange={setStack} /></div>
+        </div>
+      </ConsoleCard>
+      <Accordion type="multiple" defaultValue={["auth"]} className="mt-4 space-y-3">
         <AccordionItem value="auth" className="rounded-xl border border-border px-4">
           <AccordionTrigger>{t("console.aiPrompts.auth")}</AccordionTrigger>
           <AccordionContent className="space-y-2">
             {!app.handleSyncEnabled && <p className="text-xs text-muted-foreground">{t("console.aiPrompts.syncOff")}</p>}
-            <CodeBlock label="prompt · auth + handle sync" code={buildHandleSyncPrompt(app)} />
+            <CodeBlock label={`prompt · auth · ${tool} · ${stack}`} code={buildHandleSyncPrompt(app, tool, stack)} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="badges" className="rounded-xl border border-border px-4">
           <AccordionTrigger>{t("console.aiPrompts.badges")}</AccordionTrigger>
           <AccordionContent className="space-y-2">
             <p className="text-xs text-muted-foreground">{t("console.aiPrompts.badgePreview")}</p>
-            <CodeBlock label="prompt · badges" code={buildBadgePrompt(app)} />
+            <CodeBlock label={`prompt · badges · ${tool} · ${stack}`} code={buildBadgePrompt(app, tool, stack)} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="full" className="rounded-xl border border-border px-4">
           <AccordionTrigger>{t("console.aiPrompts.full")}</AccordionTrigger>
           <AccordionContent className="space-y-4">
-            <ConsoleCard>
-              <div className="space-y-4">
-                <div><p className="mb-2 text-sm font-medium">{t("console.aiPrompts.assistant")}</p><Pills<AiTool> items={TOOLS} value={tool} onChange={setTool} /></div>
-                <div><p className="mb-2 text-sm font-medium">{t("console.aiPrompts.stack")}</p><Pills<Stack> items={STACKS} value={stack} onChange={setStack} /></div>
-              </div>
-            </ConsoleCard>
             <CodeBlock label={`prompt · ${tool} · ${stack}`} code={buildAiPrompt(app, tool, stack)} />
           </AccordionContent>
         </AccordionItem>

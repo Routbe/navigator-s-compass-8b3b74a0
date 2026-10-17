@@ -221,8 +221,14 @@ model RoutWebhookEvent {
 
 export type PromptApp = { name: string; clientId: string };
 
-export function buildHandleSyncPrompt(app: PromptApp): string {
+/** Opening lines shared by every prompt so the chosen assistant + stack apply everywhere. */
+function promptIntro(tool: AiTool, stack: Stack): string[] {
+  return [TOOLS[tool], `Build this in ${STACKS[stack]}.`, ""];
+}
+
+export function buildHandleSyncPrompt(app: PromptApp, tool: AiTool = "generic", stack: Stack = "other"): string {
   return [
+    ...promptIntro(tool, stack),
     `I am building an app ("${app.name}") and want to integrate 'Login with ROUT' as my authentication and identity provider.`,
     `Please build the standard OIDC OAuth2 flow using the discovery URL: \`${DISCOVERY_URL}\`.`,
     `My Client ID is: ${app.clientId}.`,
@@ -262,8 +268,9 @@ export function buildHandleSyncPrompt(app: PromptApp): string {
   ].join("\n");
 }
 
-export function buildBadgePrompt(app: PromptApp): string {
+export function buildBadgePrompt(app: PromptApp, tool: AiTool = "generic", stack: Stack = "other"): string {
   return [
+    ...promptIntro(tool, stack),
     `I want to integrate the ROUT Badge Issuance API into "${app.name}" (client_id ${app.clientId}) to send digital certificates to users' ROUT profiles.`,
     "NOTE: this API is in preview; build it behind a feature flag ROUT_BADGES_ENABLED.",
     `Please build a backend service that makes an authenticated POST request to \`${ROUT_ISSUER}/api/v1/badges/issue\`.`,

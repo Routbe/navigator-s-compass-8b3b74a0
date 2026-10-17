@@ -107,3 +107,20 @@ export async function listDebugEvents(clientId: string, errorsOnly: boolean): Pr
     createdAt: new Date(r["created_at"] as string).toISOString(),
   }));
 }
+
+/** Recent events across several of the caller's own apps (API activity view). */
+export async function listDebugEventsForClients(clientIds: string[]): Promise<(DebugEvent & { clientId: string })[]> {
+  if (!clientIds.length) return [];
+  await ensure();
+  const rows = (await sql`select * from public.oauth_debug_events where client_id = any(${clientIds})
+      and created_at > now() - interval '7 days' order by created_at desc, id desc limit 50`) as Record<string, unknown>[];
+  return rows.map((r) => ({
+    id: String(r["id"]),
+    clientId: String(r["client_id"]),
+    endpoint: String(r["endpoint"]),
+    outcome: String(r["outcome"]),
+    errorCode: (r["error_code"] as string | null) ?? null,
+    detail: (r["detail"] as DebugDetail) ?? {},
+    createdAt: new Date(r["created_at"] as string).toISOString(),
+  }));
+}

@@ -57,6 +57,18 @@ export const listOAuthDebugEvents = createServerFn({ method: "POST" })
     return listDebugEvents(app.clientId, Boolean(data.errorsOnly));
   });
 
+export const listMyApiActivity = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }) => {
+    await assertVerified(context.userId);
+    const { listClients } = await import("./provider.server");
+    const apps = await listClients(context.userId);
+    const { listDebugEventsForClients } = await import("./debug-events.server");
+    const names = new Map(apps.map((a) => [a.clientId, a.name]));
+    const events = await listDebugEventsForClients(apps.map((a) => a.clientId));
+    return events.map((e) => ({ ...e, appName: names.get(e.clientId) ?? e.clientId }));
+  });
+
 export const listOAuthClients = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(async ({ context }) => {
@@ -265,9 +277,13 @@ const authorizeSchema = z.object({
 });
 type AuthorizeInput = z.infer<typeof authorizeSchema>;
 
+export type AuthorizeDebug = { code: string; expected: string[]; received: string };
+
 export type AuthorizePrompt = {
   ok: boolean;
   error?: string;
+  /** Developer-facing details, shown behind a toggle on the error screen. */
+  debug?: AuthorizeDebug;
   /** Standard OIDC error redirect back to the app (only when the redirect URI is trusted). */
   redirectTo?: string;
   app?: {
@@ -317,9 +333,13 @@ async function checkRequest(data: AuthorizeInput) {
     hasPkce: data.codeChallenge.length > 0,
     pkceMethod: data.codeChallengeMethod ?? null,
   };
-  const fail = (code: string, error: string, back?: string) => {
+  const fail = (code: string, error: string, back?: string, debug?: AuthorizeDebug) => {
     logOAuthEvent(data.clientId, "authorize", "error", code, detail);
-    return { error, ...(back ? { redirectTo: errorRedirect(data.redirectUri, data.state, back, error) } : {}) } as const;
+    return {
+      error,
+      ...(back ? { redirectTo: errorRedirect(data.redirectUri, data.state, back, error) } : {}),
+      ...(debug ? { debug } : {}),
+    } as const;
   };
   const client = await getClientByClientId(data.clientId);
   if (!client || client.status !== "active") return fail("invalid_client", "Deze app is onbekend bij ROUT.");
@@ -327,7 +347,13 @@ async function checkRequest(data: AuthorizeInput) {
     console.error(
       `[OIDC Auth] Redirect URI mismatch for client ${client.clientId}. Allowed URIs in DB: ${JSON.stringify(client.redirectUris)} | Requested: ${JSON.stringify(data.redirectUri)} | Normalized requested: ${JSON.stringify(normalizeRedirectUri(data.redirectUri))}`,
     );
-    return fail("invalid_redirect_uri", "Het terugkeeradres van deze app klopt niet.");
+    // Only for a known, active client: its registered URIs are already public
+    // through every successful login, so showing them does not leak anything.
+    return fail("invalid_redirect_uri", "Het terugkeeradres van deze app klopt niet.", undefined, {
+      code: "redirect_uri_mismatch",
+      expected: client.redirectUris,
+      received: data.redirectUri,
+    });
   }
   const hasPkce = data.codeChallenge.length > 0;
   if (hasPkce && (data.codeChallengeMethod !== "S256" || data.codeChallenge.length < 43)) {
@@ -360,7 +386,12 @@ export const describeAuthorizeRequest = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<AuthorizePrompt> => {
     const checked = await checkRequest(data);
     if ("error" in checked) {
-      return { ok: false, error: checked.error, ...("redirectTo" in checked ? { redirectTo: checked.redirectTo } : {}) };
+      return {
+        ok: false,
+        error: checked.error,
+        ...("redirectTo" in checked ? { redirectTo: checked.redirectTo } : {}),
+        ...("debug" in checked && checked.debug ? { debug: checked.debug } : {}),
+      };
     }
     const { client, scopes, stepUp } = checked;
     const { hasConsent, userMayUseClient, isVerifiedApp } = await import("./provider.server");

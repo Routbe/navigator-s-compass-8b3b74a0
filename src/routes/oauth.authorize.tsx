@@ -257,6 +257,7 @@ function AuthorizePage() {
           <p className="mt-4 text-xs text-muted-foreground">
             We sturen je hierbij niet terug naar de app: dat zou onveilig zijn.
           </p>
+          {prompt.debug && <DeveloperDetails debug={prompt.debug} />}
         </div>
       </main>
     );
@@ -466,5 +467,28 @@ function AuthorizePage() {
         </p>
       </div>
     </main>
+  );
+}
+
+function DeveloperDetails({ debug }: { debug: NonNullable<AuthorizePrompt["debug"]> }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-6 text-left">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="mx-auto block text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+      >
+        {open ? "Foutdetails verbergen" : "Foutdetails weergeven (voor ontwikkelaars)"}
+      </button>
+      {open && (
+        <pre className="mt-3 overflow-x-auto whitespace-pre-wrap break-all rounded-xl border border-border bg-muted p-3 font-mono text-xs text-foreground">
+{`Error: ${debug.code}
+Verwacht: ${debug.expected.length ? debug.expected.join("\n          ") : "(geen adressen ingesteld)"}
+Ontvangen in verzoek: ${debug.received}`}
+        </pre>
+      )}
+    </div>
   );
 }
