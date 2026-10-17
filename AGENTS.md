@@ -36,3 +36,4 @@
 - Admin email entry checks configured owners or stored admin roles before auth; endpoint checks remain. Why: refuse members without granting privileges.
 - Profile sections use profile-section-blocks.ts and blocks; explicit hidden/scheduled sections suppress fallbacks. Why: no duplicate or resurrected content.
 - No Supabase client or token middleware; sessions use the rout_session cookie. Why: it broke sign-in.
+- Redirect targets and callback origins from client input pass `safeRedirect`/`trustedOrigin` (`src/lib/safe-redirect.ts`); logs never contain auth codes, tokens or message content. Why: open-redirect and log-leak prevention.
