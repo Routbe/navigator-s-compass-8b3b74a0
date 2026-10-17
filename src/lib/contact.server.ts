@@ -164,7 +164,7 @@ export async function notifyKchat(payload: ContactPayload): Promise<void> {
     await recordOutboundWebhook("kchat", "contact_notification", response.status);
     if (!response.ok) {
       const detail = await response.text().catch(() => "");
-      console.error(`[kchat] webhook failed [${response.status}]: ${detail.slice(0, 300)}`);
+      console.error(`[kchat] webhook failed [${response.status}]`);
       throw new Error(`KChat webhook failed [${response.status}]: ${detail.slice(0, 300)}`);
     }
   } catch (error) {
