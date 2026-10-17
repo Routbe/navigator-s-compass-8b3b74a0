@@ -16,7 +16,7 @@
 - Public profile visibility (`publicProfile`, `timelineVisible` in `display_prefs`) is enforced server-side in the public profile/timeline functions. Why: client checks leak data.
 - Every env var name is documented in `ENVIRONMENT.md` (+ `.env.example`); provider env lookups go through `envAny()` aliases in `better-auth.server.ts` (incl. `<PROVIDER>_OAUTH_CLIENT_*`); the auth secret resolves via `resolveAuthSecret()` with a derived fallback. Why: one findable list; a missing variable never breaks all sign-ins.
 - A failed provider-status check on the sign-in screen means unknown (buttons still try), never "all inactive". Why: a flaky status call must not disable logins.
-- Every sign-in method returns through `/auth/continue`; destinations and tour drafts use HttpOnly cookies, never URLs. Tour drafts apply only to new accounts; taken handles fall back to onboarding. Why: zero-hop redirects, no token leakage, existing members never overwritten. Auth emails: `sendLocalizedEmail`, static template IDs, non-blocking.
+- Sign-ins return via `/auth/continue`; destinations/tour drafts use HttpOnly cookies; drafts only for new accounts, taken handles go to onboarding. Why: no token leaks or overwrites. Auth emails: `sendLocalizedEmail`, static template IDs, non-blocking.
 - ALTCHA uses self-hosted single-use proofs; db/54 owns replay DDL, unavailable storage fails closed, invalid proofs are refused before auth. Why: least privilege without weaker bot protection.
 - Community stats are live counts; reviews show only when `approved` (db/65); empty sections hide. Approving a verification cancels that user's other open same-tier requests (`verification-dedupe.ts`). Why: no fake social proof or duplicate work.
 - Vercel builds: nitro `vercel` preset; sandbox: cloudflare.
@@ -28,7 +28,7 @@
 - Build mode filters route files via app-mode-routes.ts; admin files use admin.* names. Why: public bundles must exclude admin code.
 - Shells load lazily; preview mode overrides are UI-only. Why: previews never loosen server access.
 - Stamps: lock links before redeeming in one gateway transaction; enforce public profile visibility. Why: no cap overruns or private collections leaked.
-- Open-web ownership is proven only by the server-side bio-check (`open-web-rules.ts` + `checkBioVerify`): `verified_via` is 'sso' or 'bio', and changing the handle drops bio verification. User-supplied fetch hosts (RSS, Mastodon) must pass `isPublicHost`. Why: no OAuth, no trust in client input, no SSRF.
+- Open-web ownership: server-side bio-check only (`checkBioVerify`); `verified_via` 'sso'|'bio', handle change drops bio; user fetch hosts pass `isPublicHost`. Why: no client trust, no SSRF.
 - Guestbook (`guestbook.server.ts`, db/90): only signed-in members post, owners pin/delete via `owner_id` checks, public reads return pinned notes of public profiles only. Why: verified network effect, no spam, privacy enforced server-side.
 
 - Admin control uses authenticated RPCs with assertAdminRole, keyset pages and explicit errors; transport logs store actual HTTP status/direction, never URLs or request bodies. Why: protect private data and avoid invented telemetry.
