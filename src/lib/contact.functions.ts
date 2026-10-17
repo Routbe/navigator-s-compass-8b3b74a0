@@ -100,7 +100,7 @@ export const submitContactMessage = createServerFn({ method: "POST" })
     };
 
     console.info(
-      `[contact] step 1/3 db insert: name=${data.name.length}ch email=${data.email.split("@")[1] ?? "?"} subject="${data.subject}" message=${data.message.length}ch locale=${data.locale}`,
+      `[contact] step 1/3 db insert: name=${data.name.length}ch subject=${data.subject.length}ch message=${data.message.length}ch locale=${data.locale}`,
     );
 
     const { data: row, error: insertError } = await dbAdmin

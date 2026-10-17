@@ -30,7 +30,9 @@ export const startIdentityVerification = createServerFn({ method: "POST" })
     const { diditAvailable } = await import("./identity-rules");
     if (!id.providerConfigured(data.provider)) return { ok: false, reason: "not_configured" };
     if ((await id.getIdentityStatus(context.userId)).isVerified) return { ok: false, reason: "already_verified" };
-    const origin = new URL(data.origin).origin;
+    const { trustedOrigin } = await import("@/lib/safe-redirect");
+    // Client-supplied origin: only our own domains (dev hosts outside production) may receive callbacks.
+    const origin = trustedOrigin(data.origin, { allowDev: process.env["VERCEL_ENV"] !== "production" }) ?? "https://rout.be";
 
     if (data.provider === "w_identity") {
       const issuer = process.env["W_IDENTITY_ISSUER"]!.replace(/\/$/, "");

@@ -34,3 +34,8 @@
 - [x] Hoekafronding en Knopstijl: opties duidelijk verschillend maken
 - [x] Knopvorm: ronde bol (alleen icoon) of lijn met naam, met toegankelijkheidsmelding
 - [x] Profielhub: niet verspringen bij openen/sluiten van mappen of pop-ups
+
+## Security & Discord 17/10
+- [x] Open redirects dichten (safeRedirect: alleen relatief, rout.be, rout.dlp.li)
+- [x] Inlogcodes en berichtinhoud uit logs
+- [ ] Discord OAuth (identify + connections), versleutelde tokens, profielkaart, ontkoppelen (wacht op DISCORD_CLIENT_ID/SECRET)
