@@ -16,7 +16,7 @@ export async function telegramSend(botToken: string, chatId: number, text: strin
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ chat_id: chatId, text, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }),
   });
-  if (!res.ok) console.warn(`[telegram] sendMessage failed [${res.status}]: ${await res.text()}`);
+  if (!res.ok) console.warn(`[telegram] sendMessage failed [${res.status}]`);
 }
 
 let ready: Promise<void> | null = null;
